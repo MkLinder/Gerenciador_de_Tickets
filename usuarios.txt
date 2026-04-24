@@ -1,0 +1,3 @@
+COLABORADOR;João Silva;123.456.789-00;(48) 99999-1111;Rua das Flores, 123 - Centro, Florianópolis - SC;joao.silva@email.com;789654;Suporte
+COLABORADOR;Maria Oliveira;987.654.321-00;(48) 98888-2222;Av. Beira Mar, 456 - Agronômica, Florianópolis - SC;maria.oliveira@email.com;321457;Financeiro
+CLIENTE;Ana Costa;555.666.777-88;(48) 96666-4444;Rua Koesa, 321 - Kobrasol, São José - SC;ana.costa@email.com;853654;Cliente
