@@ -1,35 +1,45 @@
 package model;
 
+import enums.TipoUsuario;
+
 public class Usuario {
+    private int id;
     private String nome;
     private String cpf;
     private String telefone;
-    private String endereco;
     private String email;
     private String senha;
 
-    public Usuario() {
-    }
 
-    public Usuario(String nome, String cpf, String telefone, String endereco, String email, String senha) {
+    public Usuario(String nome, String cpf, String telefone, String email, String senha) {
         this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
-        this.endereco = endereco;
         this.email = email;
         this.senha = senha;
     }
 
+
+    public TipoUsuario getTipoUsuario() {
+        if (this instanceof Colaborador) {
+            return TipoUsuario.COLABORADOR;
+        } else {
+            return TipoUsuario.CLIENTE;
+        }
+    }
 
     @Override
     public String toString() {
         return "model.Usuario{" +
                 "nome='" + nome + '\'' +
                 ", telefone='" + telefone + '\'' +
-                ", endereco='" + endereco + '\'' +
                 ", email='" + email + '\'' +
                 ", senha='" + senha + '\'' +
                 '}';
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getNome() {
@@ -44,10 +54,6 @@ public class Usuario {
         return telefone;
     }
 
-    public String getEndereco() {
-        return endereco;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -56,16 +62,16 @@ public class Usuario {
         return senha;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
     }
 
     public void setEmail(String email) {

@@ -1,11 +1,11 @@
 package persistence;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.FileReader;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import enums.Departamento;
+import enums.TipoUsuario;
 
 import model.Cliente;
 import model.Colaborador;
@@ -15,15 +15,68 @@ public class UsuariosBD {
 
     private static final String CAMINHO = "usuarios.txt";
 
+    public UsuariosBD(){
+        inicializarArquivoComAdmin();
+    }
+
+    private void inicializarArquivoComAdmin() {
+        try {
+            File file = new File(CAMINHO);
+
+            // Se o arquivo ainda não existe OU está vazio
+            if (!file.exists() || file.length() == 0) {
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(CAMINHO))) {
+
+                    String admin = "1;COLABORADOR;Admin;00000000000;(00)0000-0000;Sistema;admin;admin;SUPORTE";
+
+                    writer.write(admin);
+                    writer.newLine();
+                }
+            }
+
+        } catch (IOException e) {
+            System.err.println("Erro ao inicializar arquivo: " + e.getMessage());
+        }
+    }
+
+
+    public int gerarProximoIdUsuario() {
+        int maiorId = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(CAMINHO))) {
+            String linha;
+
+            while ((linha = reader.readLine()) != null) {
+                String[] dados = linha.split(";");
+
+                int id = Integer.parseInt(dados[0]);
+
+                if (id > maiorId) {
+                    maiorId = id;
+                }
+            }
+
+        } catch (Exception e) {
+
+        }
+
+        return maiorId + 1;
+    }
+
     public void salvarNovoUsuario(Usuario usuario) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CAMINHO, true))) {
+
+            int id = gerarProximoIdUsuario();
+            usuario.setId(id);
 
             String linha;
 
             if (usuario instanceof Colaborador) {
                 Colaborador c = (Colaborador) usuario;
 
-                linha = "COLABORADOR;" +
+                linha = c.getId() + ";" +
+                        TipoUsuario.COLABORADOR.name() + ";" +
                         c.getNome() + ";" +
                         c.getCpf() + ";" +
                         c.getTelefone() + ";" +
@@ -33,14 +86,15 @@ public class UsuariosBD {
                         c.getDepartamento();
             } else {
                 Cliente c = (Cliente) usuario;
-                linha = "CLIENTE;" +
+
+                linha = c.getId() + ";" +
+                        TipoUsuario.CLIENTE.name() + ";" +
                         c.getNome() + ";" +
                         c.getCpf() + ";" +
                         c.getTelefone() + ";" +
-                        c.getEndereco() + ";" +
+                        c.getCnpjEmpresa() + ";" +
                         c.getEmail() + ";" +
-                        c.getSenha()+ ";" +
-                        c.getCategoria();
+                        c.getSenha();
             }
 
             writer.write(linha);
@@ -54,8 +108,7 @@ public class UsuariosBD {
         }
     }
 
-
-    public List<Usuario> listar() {
+    public List<Usuario> listarUsuario() {
         List<Usuario> usuarios = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(CAMINHO))) {
@@ -64,27 +117,47 @@ public class UsuariosBD {
 
             while ((linha = reader.readLine()) != null) {
                 String[] dados = linha.split(";");
+                for (int i = 0; i < dados.length; i++) {
+                    dados[i] = dados[i].trim();
+                }
 
-                String tipo = dados[0];
+                int id = Integer.parseInt(dados[0]);
+                TipoUsuario tipoDeUsuario;
 
-                if (tipo.equals("COLABORADOR") && dados.length >= 8) {
+                try {
+                    tipoDeUsuario = TipoUsuario.valueOf(dados[1]);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Tipo inválido: " + dados[1]);
+                    continue;
+                }
+
+                if (tipoDeUsuario == TipoUsuario.COLABORADOR && dados.length >= 9) {
+
+                    Departamento departamento;
+
+                    try {
+                        departamento = Departamento.valueOf(dados[8].trim().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Departamento inválido: " + dados[8]);
+                        continue;
+                    }
 
                     Usuario usuario = new Colaborador(
-                            dados[1],
                             dados[2],
                             dados[3],
                             dados[4],
                             dados[5],
                             dados[6],
-                            dados[7]
+                            dados[7],
+                            departamento
                     );
 
+                    usuario.setId(id);
                     usuarios.add(usuario);
 
-                } else if (tipo.equals("CLIENTE") && dados.length >= 7) {
+                } else if (tipoDeUsuario == TipoUsuario.CLIENTE && dados.length >= 8) {
 
                     Usuario usuario = new Cliente(
-                            dados[1],
                             dados[2],
                             dados[3],
                             dados[4],
@@ -93,6 +166,7 @@ public class UsuariosBD {
                             dados[7]
                     );
 
+                    usuario.setId(id);
                     usuarios.add(usuario);
                 }
             }

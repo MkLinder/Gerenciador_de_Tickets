@@ -1,9 +1,13 @@
 package view;
 
+import java.util.Scanner;
+
+import enums.Departamento;
+
 import model.Cliente;
 import model.Colaborador;
 import model.Usuario;
-import java.util.Scanner;
+
 
 public class ColetarDadosUsuario {
 
@@ -19,21 +23,19 @@ public class ColetarDadosUsuario {
         System.out.print("Digite seu telefone no formato (xx) xxxx-xxxx: ");
         String telefone = scanner.nextLine();
 
-        System.out.print("Digite seu endereço no formato rua/trv/av, nº - bairro, cidade - sigla estado: ");
-        String endereco = scanner.nextLine();
+        System.out.print("Digite o cnpj da empresa [xx.xxx.xxx/xxxx-xx]: ");
+        String cnpj = scanner.nextLine();
 
-        System.out.print("Digite seu email: ");
+        System.out.print("Digite seu email: "); //Adicionar restrição para email único.
         String email = scanner.nextLine();
 
         System.out.print("Crie uma senha com 6 caracteres: ");
         String senha = scanner.nextLine();
 
-        String categoria = "Cliente";
-
-        return new Cliente(nome, cpf, telefone, endereco, email, senha, categoria);
+        return new Cliente(nome, cpf, telefone, cnpj, email, senha);
     }
 
-    public Usuario coletarDadosColaborador(String departamento){
+    public Usuario coletarDadosColaborador(Departamento departamento){
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Digite seu nome completo: ");

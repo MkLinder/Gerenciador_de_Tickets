@@ -7,3 +7,6 @@ public class Main {
         menu.menu();
     }
 }
+
+// ⚠️ Continuar edição/aprimoramento de criação de ticket e listagem de tickets
+// ⚠️ Aprimorar cadastro de usuários: Se Admin - cadastrar colaborador; Se Colaborador - cadastrar cliente

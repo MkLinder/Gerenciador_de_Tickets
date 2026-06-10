@@ -1,20 +1,20 @@
 package model;
 
+import enums.TipoUsuario;
+
 public class Cliente extends Usuario {
+    private String cnpjEmpresa;
 
-    private String categoria;
-
-    public Cliente(String nome, String cpf, String telefone, String endereco, String email, String senha, String categoria){
-        super(nome, cpf, telefone, endereco, email, senha);
-        this.categoria = categoria;
+    public Cliente(String nome, String cpf, String telefone, String cnpj, String email, String senha){
+        super(nome, cpf, telefone, email, senha);
+        this.cnpjEmpresa = cnpj;
     }
 
-    // Implementar posteriormente
-    public void clienteCadastrado(String nome){
-        System.out.println(categoria + " " + nome + " cadastrado com sucesso!");
+    public String getCnpjEmpresa() {
+        return cnpjEmpresa;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public void setCnpjEmpresa(String cnpjEmpresa) {
+        this.cnpjEmpresa = cnpjEmpresa;
     }
 }

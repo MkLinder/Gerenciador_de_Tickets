@@ -1,19 +1,26 @@
 package model;
 
+import enums.Departamento;
+
 public class Colaborador extends Usuario {
-    private String departamento;
+    private Departamento departamento;
+    private String endereco;
 
-    public Colaborador(String nome, String cpf, String telefone, String endereco, String email, String senha, String departamento) {
-        super(nome, cpf, telefone, endereco, email, senha);
+    public Colaborador(String nome, String cpf, String telefone, String endereco, String email, String senha, Departamento departamento) {
+        super(nome, cpf, telefone, email, senha);
         this.departamento = departamento;
+        this.endereco = endereco;
     }
 
-    // Implementar posteriormente
-    public void colaboradorCadastrado(String nome, String departamento){
-        System.out.println("Colaborador " + nome + " [" + departamento + "]" + " cadastrado com sucesso!");
-    }
-
-    public String getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
 }
