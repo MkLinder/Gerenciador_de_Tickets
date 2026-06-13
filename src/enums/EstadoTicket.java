@@ -1,6 +1,6 @@
 package enums;
 
-public enum StatusTicket {
+public enum EstadoTicket {
     ABERTO,
     FECHADO
 }

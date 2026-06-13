@@ -1,14 +1,15 @@
 package service;
 import model.Usuario;
-import persistence.UsuariosBD;
+import persistence.UsuariosDAO;
+
 import java.util.List;
 
 public class LoginUsuarioService {
-    private UsuariosBD usuariosBD = new UsuariosBD();
+    private UsuariosDAO usuariosDAO = new UsuariosDAO();
 
     public Usuario autenticar(String email, String senha) {
 
-        List<Usuario> usuarios = usuariosBD.listarUsuario();
+        List<Usuario> usuarios = usuariosDAO.listarUsuarios();
 
         for (Usuario u : usuarios) {
             if (u.getEmail().equals(email) && u.getSenha().equals(senha)) {

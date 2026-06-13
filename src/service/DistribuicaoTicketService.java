@@ -7,19 +7,19 @@ import enums.Departamento;
 import model.Colaborador;
 import model.Ticket;
 import model.Usuario;
-import persistence.TicketsBD;
-import persistence.UsuariosBD;
+import persistence.TicketsDAO;
+import persistence.UsuariosDAO;
 
 
 public class DistribuicaoTicketService {
 
     public Colaborador escolherColaborador() {
 
-        UsuariosBD usuariosBD = new UsuariosBD();
-        TicketsBD ticketsBD = new TicketsBD();
+        UsuariosDAO usuariosDAO = new UsuariosDAO();
+        TicketsDAO ticketsDAO = new TicketsDAO();
 
-        List<Usuario> usuarios = usuariosBD.listarUsuario();
-        List<Ticket> tickets = ticketsBD.listarTickets();
+        List<Usuario> usuarios = usuariosDAO.listarUsuarios();
+        List<Ticket> tickets = ticketsDAO.listarTodosTickets();
 
         // Filtrar apenas colaboradores de SUPORTE
         List<Colaborador> suportes = new ArrayList<>();
@@ -49,7 +49,7 @@ public class DistribuicaoTicketService {
             int contador = 0;
 
             for (Ticket t : tickets) {
-                if (t.getIdColaboradorResponsavel() == c.getId()) {
+                if (t.getColaborador().getId() == c.getId()) {
                     contador++;
                 }
             }

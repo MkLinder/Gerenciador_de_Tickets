@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
+import Utils.FormatadorDataHora;
 import enums.Departamento;
 
-import enums.StatusTicket;
+import enums.EstadoTicket;
 import enums.TipoServico;
 import model.*;
-import persistence.EmpresasBD;
-import persistence.TicketsBD;
-import persistence.UsuariosBD;
+import persistence.*;
+import service.DistribuicaoTicketService;
 import service.LoginUsuarioService;
 
 
@@ -20,7 +20,7 @@ public class Menu {
 
     public void menu(){
 
-        String loginCadastroUsuario;
+        String loginUsuario;
 
         do {
             System.out.println("\nGERENCIADOR DE TICKETS");
@@ -29,11 +29,11 @@ public class Menu {
                             "\n[0] Sair ");
             System.out.println("------------------------------");
             System.out.print("Escolha uma opção: ");
-            loginCadastroUsuario = scanner.nextLine();
+            loginUsuario = scanner.nextLine();
 
-            UsuariosBD usuariosBD = new UsuariosBD();
+            UsuariosDAO usuariosDAO = new UsuariosDAO();
 
-            if(loginCadastroUsuario.equalsIgnoreCase("1")){
+            if(loginUsuario.equalsIgnoreCase("1")){
 
                 System.out.println("------------------------------");
                 System.out.print("Digite seu email: ");
@@ -71,6 +71,10 @@ public class Menu {
                                 System.out.print("Escolha uma opção: ");
                                 String tipoServicoEscolhido = scanner.nextLine();
 
+                                System.out.println("------------------------------");
+                                System.out.print("Descreva brevemente sua solicitação: ");
+                                String descricao = scanner.nextLine();
+
                                 LocalDateTime dataHora = LocalDateTime.now();
 
                                 TipoServico tipoServico;
@@ -92,17 +96,52 @@ public class Menu {
                                         return;
                                 }
 
-                                Ticket ticket = new Ticket(usuarioAutenticado.getId(), tipoServico, dataHora);
+                                Colaborador colaboradorEscolhido = new DistribuicaoTicketService().escolherColaborador();
 
-                                ticket.setStatus(StatusTicket.ABERTO);
+                                Ticket ticket = new Ticket(usuarioAutenticado, colaboradorEscolhido, tipoServico, dataHora, descricao);
 
-                                TicketsBD dadosTicket = new TicketsBD();
-                                dadosTicket.salvarNovoTicket(ticket);
+                                ticket.setEstado(EstadoTicket.ABERTO);
+
+                                TicketsDAO ticketDAO = new TicketsDAO();
+                                ticketDAO.salvarTicket(ticket);
+                            }else if (criarListarTicket.equalsIgnoreCase("2")){
+                                List<Ticket> tickets = new TicketsDAO().listarTicketsCliente(usuarioAutenticado.getId());
+
+                                System.out.printf(
+                                        "%-3s %-18s %-18s %-10s %-25s %-16s%n",
+                                        "\n\nID",
+                                        "COLABORADOR",
+                                        "SERVIÇO",
+                                        "STATUS",
+                                        "OBSERVAÇÃO",
+                                        "DATA ABERTURA"
+                                );
+
+                                System.out.println("-----------------------------------------------------------------------------------------------");
+
+                                for(Ticket t: tickets){
+                                    String observacao =
+                                            t.getObservacao() == null
+                                                    ? "-"
+                                                    : t.getObservacao();
+
+                                    System.out.printf(
+                                            "%-3d %-18s %-18s %-10s %-25s %-16s%n",
+                                            t.getId(),
+                                            t.getColaborador().getNome(),
+                                            t.getTipoServico(),
+                                            t.getEstado(),
+                                            observacao,
+                                            FormatadorDataHora.formatar(t.getDataAbertura())
+                                    );
+
+                                    System.out.println("-----------------------------------------------------------------------------------------------");
+                                }
                             }
                         }while (!criarListarTicket.equalsIgnoreCase("0"));
 
 
-                    } else if (usuarioAutenticado instanceof Colaborador) {
+                    }else if (usuarioAutenticado instanceof Colaborador) {
                         String opcaoEscolhidaColaborador;
                         System.out.println("\nBem-vindo(a) " + usuarioAutenticado.getNome());
 
@@ -123,13 +162,15 @@ public class Menu {
 
                                 ColetarDadosEmpresa dadosEmpresa = new ColetarDadosEmpresa();
                                 Empresa novaEmpresa = dadosEmpresa.coletarDadosEmpresa();
-                                EmpresasBD salvarEmpresa = new EmpresasBD();
-                                salvarEmpresa.salvarNovaEmpresa(novaEmpresa);
+
+                                EmpresasDAO empresaDAO= new EmpresasDAO();
+                                empresaDAO.salvarEmpresa(novaEmpresa);
 
                             } else if (opcaoEscolhidaColaborador.equalsIgnoreCase("2")) {
 
                                 ColetarDadosUsuario novoUsuario = new ColetarDadosUsuario();
-                                UsuariosBD salvarUsuario = new UsuariosBD();
+                                UsuariosDAO salvarCliente = new UsuariosDAO();
+                                UsuariosDAO salvarColaborador = new UsuariosDAO();
 
                                 System.out.println("CADASTRO DE USUÁRIO: ");
                                 System.out.println("------------------------------");
@@ -143,8 +184,9 @@ public class Menu {
 
 
                                 if (tipoUsuarioEscolhido.equalsIgnoreCase("1")) {
-                                    Usuario dadosUsuario = novoUsuario.coletarDadosCliente();
-                                    salvarUsuario.salvarNovoUsuario(dadosUsuario);
+                                    Cliente dadosCliente = novoUsuario.coletarDadosCliente();
+
+                                    salvarCliente.salvarCliente(dadosCliente);
 
                                 } else if (tipoUsuarioEscolhido.equalsIgnoreCase("2")) {
                                     System.out.println("-------------- DEPARTAMENTO --------------");
@@ -171,15 +213,15 @@ public class Menu {
                                             return;
                                     }
 
-                                    Usuario dadosUsuario = novoUsuario.coletarDadosColaborador(departamento);
-                                    salvarUsuario.salvarNovoUsuario(dadosUsuario);
+                                    Colaborador dadosColaborador = novoUsuario.coletarDadosColaborador(departamento);
+                                    salvarColaborador.salvarColaborador(dadosColaborador);
 
                                 } else if (tipoUsuarioEscolhido.equalsIgnoreCase("0")) {
                                     break;
                                 }
                             } else if(opcaoEscolhidaColaborador.equalsIgnoreCase("3")){
-                                EmpresasBD empresasBD = new EmpresasBD();
-                                List<Empresa> empresas = empresasBD.listarEmpresas();
+                                EmpresasDAO empresasDAO = new EmpresasDAO();
+                                List<Empresa> empresas = empresasDAO.listarEmpresas();
 
                                 System.out.println("\n--- NOME EMPRESA - CNPJ ------");
 
@@ -188,28 +230,31 @@ public class Menu {
                                 }
 
                             } else if (opcaoEscolhidaColaborador.equalsIgnoreCase("4")) {
-                                List<Usuario> usuarios = usuariosBD.listarUsuario();
+                                List<Usuario> usuarios = usuariosDAO.listarUsuarios();
                                 System.out.println("-- TIPO USUÁRIO - Nome usuário -------");
 
                                 for (Usuario u : usuarios) {
-                                    if (u instanceof Colaborador) {
-                                        System.out.println((u).getTipoUsuario() + " - " + u.getNome());
-                                    } else if (u instanceof Cliente) {
-                                        System.out.println((u).getTipoUsuario() + " - " + u.getNome());
-                                    }
+
+                                    System.out.println(
+                                                    u.getTipoUsuario() + " - " +
+                                                    u.getNome()
+                                    );
                                 }
                             } else if (opcaoEscolhidaColaborador.equalsIgnoreCase("5")) {
-                                TicketsBD ticketsBD = new TicketsBD();
-                                List<Ticket> tickets = ticketsBD.listarTickets();
+                                TicketsDAO ticketsDAO = new TicketsDAO();
+                                List<Ticket> tickets = ticketsDAO.listarTodosTickets();
 
                                 if (tickets.isEmpty()) {
                                     System.out.println("\nNenhum registro encontrado.");
                                 } else {
                                     for (Ticket t : tickets) {
+
                                         System.out.println("ID: " + t.getId() +
-                                                " | Cliente: " + t.getIdCliente() +
-                                                " | Colaborador: " + t.getIdColaboradorResponsavel() +
-                                                " | Status: " + t.getStatus());
+                                                " | Cliente: " + t.getCliente().getId() +
+                                                " | Colaborador: " + t.getColaborador().getId() +
+                                                " | Status: " + t.getEstado());
+
+
                                     }
                                 }
                             }
@@ -218,11 +263,11 @@ public class Menu {
                 } else {
                     System.out.println("Email ou senha inválidos.");
                 }
-            }else if(loginCadastroUsuario.equalsIgnoreCase("0")) {
+            }else if(loginUsuario.equalsIgnoreCase("0")) {
                 System.out.println("Encerrando programa...");
             }else {
                 System.out.println("Opção inválida!");
             }
-        } while (!loginCadastroUsuario.equalsIgnoreCase("0"));
+        } while (!loginUsuario.equalsIgnoreCase("0"));
     }
 }

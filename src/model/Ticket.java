@@ -1,28 +1,38 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
-import enums.StatusTicket;
+import enums.EstadoTicket;
 import enums.TipoServico;
 
 
 public class Ticket {
     private int id;
-    private int idCliente;
-    private int idColaboradorResponsavel;
+    private Usuario cliente;
+    private Colaborador colaborador;
     private TipoServico tipoServico;
     private LocalDateTime dataAbertura;
     private LocalDateTime dataFechamento;
-    private StatusTicket status;
+    private EstadoTicket estado;
+    private String descricao;
+    private String observacao;
 
     public Ticket() {
     }
 
-    public Ticket(int idCliente, TipoServico tipoServico, LocalDateTime dataAbertura){
-        this.idCliente = idCliente;
+    public Ticket(Usuario cliente, Colaborador colaborador,TipoServico tipoServico, LocalDateTime dataAbertura, String descricao){
+        this.cliente = cliente;
+        this.colaborador = colaborador;
         this.tipoServico = tipoServico;
         this.dataAbertura = dataAbertura;
+        this.descricao = descricao;
+    }
+
+    public Ticket(LocalDateTime dataFechamento, EstadoTicket estado, String descricao, String observacao){
+        this.dataFechamento = dataFechamento;
+        this.estado = estado;
+        this.descricao = descricao;
+        this.observacao = observacao;
     }
 
 
@@ -30,12 +40,12 @@ public class Ticket {
         return id;
     }
 
-    public int getIdCliente() {
-        return idCliente;
+    public Usuario getCliente() {
+        return cliente;
     }
 
-    public int getIdColaboradorResponsavel() {
-        return idColaboradorResponsavel;
+    public Colaborador getColaborador() {
+        return colaborador;
     }
 
     public TipoServico getTipoServico() {
@@ -50,16 +60,16 @@ public class Ticket {
         return dataFechamento;
     }
 
-    public StatusTicket getStatus() {
-        return status;
+    public EstadoTicket getEstado() {
+        return estado;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setIdColaboradorResponsavel(int colaboradorResponsavel) {
-        this.idColaboradorResponsavel = idColaboradorResponsavel;
+    public void setColaborador(Colaborador colaborador) {
+        this.colaborador = colaborador;
     }
 
     public void setTipoServico(TipoServico tipoServico) {
@@ -74,12 +84,27 @@ public class Ticket {
         this.dataFechamento = dataFechamento;
     }
 
-    public void setStatus(StatusTicket status) {
-        this.status = status;
+    public void setEstado(EstadoTicket estado) {
+        this.estado = estado;
     }
 
-    public void setIdCliente(int idCliente) {
-        this.idCliente = idCliente;
+    public void setCliente(Usuario cliente) {
+        this.cliente = cliente;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
 }

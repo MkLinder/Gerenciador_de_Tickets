@@ -6,12 +6,11 @@ import enums.Departamento;
 
 import model.Cliente;
 import model.Colaborador;
-import model.Usuario;
 
 
 public class ColetarDadosUsuario {
 
-    public Usuario coletarDadosCliente(){
+    public Cliente coletarDadosCliente(){
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Digite seu nome completo: ");
@@ -35,7 +34,7 @@ public class ColetarDadosUsuario {
         return new Cliente(nome, cpf, telefone, cnpj, email, senha);
     }
 
-    public Usuario coletarDadosColaborador(Departamento departamento){
+    public Colaborador coletarDadosColaborador(Departamento departamento){
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Digite seu nome completo: ");
