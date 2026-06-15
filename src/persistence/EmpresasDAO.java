@@ -27,7 +27,7 @@ public class EmpresasDAO {
 
             stmt.executeUpdate();
 
-            System.out.println("Empresa cadastrada!");
+            System.out.println("\nEmpresa cadastrada!");
 
         } catch (SQLException e) {
             e.printStackTrace();

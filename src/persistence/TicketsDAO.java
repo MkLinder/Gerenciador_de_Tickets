@@ -1,5 +1,6 @@
 package persistence;
 
+import Utils.ImpressaoMenu;
 import enums.EstadoTicket;
 import enums.TipoServico;
 import model.Cliente;
@@ -58,8 +59,8 @@ public class TicketsDAO {
 
             stmt.executeUpdate();
 
-            System.out.println("\n------------------------------");
             System.out.println("Ticket registrado!");
+            ImpressaoMenu.separadorlnP();
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -10,10 +10,5 @@ public class Main {
 
         Menu menu = new Menu();
         menu.menu();
-
     }
 }
-
-// ⚠️ Aprimorar cadastro de usuários: Se Admin - cadastrar colaborador; Se Colaborador - cadastrar cliente
-
-// ⚠️ Continuar listar empresas

@@ -1,7 +1,6 @@
 package persistence;
 
 import enums.Departamento;
-import enums.TipoUsuario;
 import model.Cliente;
 import model.Colaborador;
 import model.Usuario;

@@ -1,6 +1,5 @@
 package model;
 
-import enums.TipoUsuario;
 
 public class Cliente extends Usuario {
     private String cnpjEmpresa;
