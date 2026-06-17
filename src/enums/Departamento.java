@@ -11,11 +11,11 @@ public enum Departamento {
         this.id = id;
     }
 
-    public int getId() {
+    public int pegarId() {
         return id;
     }
 
-    public static Departamento fromId(int id) {
+    public static Departamento buscarPorId(int id) {
 
         for (Departamento d : values()) {
             if (d.id == id) {
@@ -26,5 +26,19 @@ public enum Departamento {
         throw new IllegalArgumentException(
                 "Departamento inválido: " + id
         );
+    }
+
+    public static Departamento opcaoEscolhida(String opcao) {
+
+        switch (opcao) {
+            case "1":
+                return SUPORTE;
+
+            case "2":
+                return FINANCEIRO;
+
+            default:
+                return null;
+        }
     }
 }

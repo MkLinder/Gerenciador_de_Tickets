@@ -63,4 +63,27 @@ public class EmpresasDAO {
 
         return empresas;
     }
+
+    public boolean cnpjExiste(String cnpj) {
+
+        String sql =
+                "SELECT 1 FROM empresas WHERE cnpj = ?";
+
+        try (
+                Connection conn = ConexaoBD.getConexaoBD();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setString(1, cnpj);
+
+            ResultSet rs = stmt.executeQuery();
+
+            return rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

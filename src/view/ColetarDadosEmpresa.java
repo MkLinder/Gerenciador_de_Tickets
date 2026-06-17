@@ -1,5 +1,6 @@
 package view;
 
+import utils.LeitorDadosEmpresa;
 import model.Empresa;
 
 import java.util.Scanner;
@@ -7,17 +8,22 @@ import java.util.Scanner;
 public class ColetarDadosEmpresa {
 
     public Empresa coletarDadosEmpresa(){
+
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Digite o cnpj da empresa [xx.xxx.xxx/xxxx-xx]: ");
-        String cnpj = scanner.nextLine();
+        String cnpj =
+                LeitorDadosEmpresa.lerCnpjCadastroEmpresa(scanner);
 
-        System.out.print("Digite o nome da empresa: ");
-        String nome = scanner.nextLine();
+        String nome =
+                LeitorDadosEmpresa.lerNomeEmpresa(scanner);
 
-        System.out.print("Digite o endereço da empresa [Rua|Trv|Av, nº - Bairro, cidade - Sigla Estado]: ");
-        String endereco = scanner.nextLine();
+        String endereco =
+                LeitorDadosEmpresa.lerEnderecoEmpresa(scanner);
 
-        return new Empresa(cnpj, nome, endereco);
+        return new Empresa(
+                cnpj,
+                nome,
+                endereco
+        );
     }
 }

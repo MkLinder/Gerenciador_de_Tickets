@@ -1,6 +1,5 @@
 package model;
 
-
 public class Cliente extends Usuario {
     private String cnpjEmpresa;
 
@@ -11,9 +10,5 @@ public class Cliente extends Usuario {
 
     public String getCnpjEmpresa() {
         return cnpjEmpresa;
-    }
-
-    public void setCnpjEmpresa(String cnpjEmpresa) {
-        this.cnpjEmpresa = cnpjEmpresa;
     }
 }

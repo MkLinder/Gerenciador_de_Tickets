@@ -2,59 +2,89 @@ package view;
 
 import java.util.Scanner;
 
+import persistence.EmpresasDAO;
+import utils.LeitorDadosEmpresa;
+import utils.LeitorDadosUsuario;
 import enums.Departamento;
 
 import model.Cliente;
 import model.Colaborador;
-
+import persistence.UsuariosDAO;
 
 public class ColetarDadosUsuario {
 
     public Cliente coletarDadosCliente(){
         Scanner scanner = new Scanner(System.in);
+        UsuariosDAO usuariosDAO = new UsuariosDAO();
+        EmpresasDAO empresasDAO = new EmpresasDAO();
 
-        System.out.print("Digite seu nome completo: ");
-        String nome = scanner.nextLine();
+        String nome =
+                LeitorDadosUsuario.lerNome(scanner);
 
-        System.out.print("Digite seu CPF [xxx.xxx.xxx-xx]: ");
-        String cpf = scanner.nextLine();
+        String cpf =
+                LeitorDadosUsuario.lerCpf(
+                        scanner,
+                        usuariosDAO
+                );
 
-        System.out.print("Digite seu telefone no formato (xx) xxxx-xxxx: ");
-        String telefone = scanner.nextLine();
+        String telefone =
+                LeitorDadosUsuario.lerTelefone(scanner);
 
-        System.out.print("Digite o cnpj da empresa [xx.xxx.xxx/xxxx-xx]: ");
-        String cnpj = scanner.nextLine();
+        String cnpj =
+                LeitorDadosEmpresa.lerCnpjCadastroCliente(
+                        scanner,
+                        empresasDAO
+                );
 
-        System.out.print("Digite seu email: "); //Adicionar restrição para email único.
-        String email = scanner.nextLine();
+        String email =
+                LeitorDadosUsuario.lerEmail(
+                        scanner,
+                        usuariosDAO
+                );
 
-        System.out.print("Crie uma senha com 6 caracteres: ");
-        String senha = scanner.nextLine();
+        String senha =
+                LeitorDadosUsuario.lerSenha(scanner);
 
         return new Cliente(nome, cpf, telefone, cnpj, email, senha);
     }
 
-    public Colaborador coletarDadosColaborador(Departamento departamento){
+    public Colaborador coletarDadosColaborador(Departamento departamento) {
+
         Scanner scanner = new Scanner(System.in);
+        UsuariosDAO usuariosDAO = new UsuariosDAO();
 
-        System.out.print("Digite seu nome completo: ");
-        String nome = scanner.nextLine();
+        String nome =
+                LeitorDadosUsuario.lerNome(scanner);
 
-        System.out.print("Digite seu CPF [xxx.xxx.xxx-xx]: ");
-        String cpf = scanner.nextLine();
+        String cpf =
+                LeitorDadosUsuario.lerCpf(
+                        scanner,
+                        usuariosDAO
+                );
 
-        System.out.print("Digite seu telefone [(xx) xxxx-xxxx]: ");
-        String telefone = scanner.nextLine();
+        String telefone =
+                LeitorDadosUsuario.lerTelefone(scanner);
 
-        System.out.print("Digite seu endereço [rua/trv/av, nº - bairro, cidade - sigla estado]: ");
-        String endereco = scanner.nextLine();
+        String endereco =
+                LeitorDadosUsuario.lerEndereco(scanner);
 
-        System.out.print("Digite seu email: ");
-        String email = scanner.nextLine();
+        String email =
+                LeitorDadosUsuario.lerEmail(
+                        scanner,
+                        usuariosDAO
+                );
 
-        System.out.print("Crie uma senha com 6 caracteres: ");
-        String senha = scanner.nextLine();
+        String senha =
+                LeitorDadosUsuario.lerSenha(scanner);
 
-        return new Colaborador(nome, cpf, telefone, endereco, email, senha, departamento);
+        return new Colaborador(
+                nome,
+                cpf,
+                telefone,
+                endereco,
+                email,
+                senha,
+                departamento
+        );
     }
 }

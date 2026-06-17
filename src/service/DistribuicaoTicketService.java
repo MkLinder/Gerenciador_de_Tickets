@@ -10,7 +10,6 @@ import model.Usuario;
 import persistence.TicketsDAO;
 import persistence.UsuariosDAO;
 
-
 public class DistribuicaoTicketService {
 
     public Colaborador escolherColaborador() {

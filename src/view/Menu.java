@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
-import Utils.FormatadorDataHora;
-import Utils.ImpressaoMenu;
+import utils.FormatadorDataHora;
+import utils.ImpressaoMenu;
 import enums.Departamento;
 
 import enums.EstadoTicket;
@@ -14,7 +14,8 @@ import model.*;
 import persistence.*;
 import service.DistribuicaoTicketService;
 import service.LoginUsuarioService;
-
+import utils.LeitorDadosUsuario;
+import utils.LeitorMenu;
 
 public class Menu {
     Scanner scanner = new Scanner(System.in);
@@ -24,26 +25,18 @@ public class Menu {
         String loginUsuario;
 
         do {
-            ImpressaoMenu.cabecalho("GERENCIADOR DE TICKETS");
 
-            System.out.println("[1] Login");
-            System.out.println("[0] Sair");
+            ImpressaoMenu.menuPrincipal();
 
-            ImpressaoMenu.separadorlnP();
-
-            System.out.print("Escolha uma opção: ");
-            loginUsuario = scanner.nextLine();
+            loginUsuario = LeitorMenu.lerOpcaoValida(scanner,"1","0");
 
             UsuariosDAO usuariosDAO = new UsuariosDAO();
 
             if(loginUsuario.equalsIgnoreCase("1")){
 
-                ImpressaoMenu.separadorlnP();
-                System.out.print("Digite seu email: ");
-                String email = scanner.nextLine();
+                String email = LeitorDadosUsuario.lerEmailLogin(scanner);
 
-                System.out.print("Digite sua senha: ");
-                String senha = scanner.nextLine();
+                String senha = LeitorDadosUsuario.lerSenhaLogin(scanner);
 
                 LoginUsuarioService login = new LoginUsuarioService();
                 Usuario usuarioAutenticado = login.autenticar(email, senha);
@@ -55,49 +48,41 @@ public class Menu {
                         ImpressaoMenu.cabecalho("Bem-vindo(a) " + usuarioAutenticado.getNome());
 
                         do {
-                            System.out.println("[1] Criar Ticket" +
-                                    "\n[2] Listar Tickets" +
-                                    "\n[0] Sair");
-                            ImpressaoMenu.separadorP();
-                            System.out.print("Escolha uma opção: ");
-                            criarListarTicket = scanner.nextLine();
+                            ImpressaoMenu.menuCliente();
+
+                            criarListarTicket = LeitorMenu.lerOpcaoValida(
+                                            scanner,
+                                            "1",
+                                            "2",
+                                            "0"
+                                    );
 
                             if (criarListarTicket.equalsIgnoreCase("1")){
-                                ImpressaoMenu.cabecalho("TIPO DE SERVIÇO");
 
-                                //System.out.println("\n------ TIPO DE SERVIÇO -------");
-                                System.out.println("[1] Atualização de softwares" +
-                                        "\n[2] Suporte remoto" +
-                                        "\n[3] Suporte presencial" +
-                                        "\n[0] Cancelar");
-                                ImpressaoMenu.separadorlnP();
-                                System.out.print("Escolha uma opção: ");
-                                String tipoServicoEscolhido = scanner.nextLine();
+                                ImpressaoMenu.menuTipoServico();
+
+                                String tipoServicoEscolhido =
+                                        LeitorMenu.lerOpcaoValida(
+                                                scanner,
+                                                "1",
+                                                "2",
+                                                "3",
+                                                "0"
+                                        );
 
                                 ImpressaoMenu.separadorlnP();
+
+                                if (tipoServicoEscolhido.equals("0")) {
+                                    continue;
+                                }
+
+                                TipoServico tipoServico =
+                                        TipoServico.opcaoEscolhida(tipoServicoEscolhido);
+
                                 System.out.print("Descreva brevemente sua solicitação: ");
                                 String descricao = scanner.nextLine();
 
                                 LocalDateTime dataHora = LocalDateTime.now();
-
-                                TipoServico tipoServico;
-
-                                switch (tipoServicoEscolhido) {
-                                    case "1":
-                                        tipoServico = TipoServico.ATUALIZACAO_SOFTWARE;
-                                        break;
-                                    case "2":
-                                        tipoServico = TipoServico.SUPORTE_REMOTO;
-                                        break;
-                                    case "3":
-                                        tipoServico = TipoServico.SUPORTE_PRESENCIAL;
-                                        break;
-                                    case "0":
-                                        return;
-                                    default:
-                                        System.out.println("Opção inválida!");
-                                        return;
-                                }
 
                                 Colaborador colaboradorEscolhido = new DistribuicaoTicketService().escolherColaborador();
 
@@ -111,8 +96,7 @@ public class Menu {
                             }else if (criarListarTicket.equalsIgnoreCase("2")){
                                 List<Ticket> tickets = new TicketsDAO().listarTicketsCliente(usuarioAutenticado.getId());
 
-                                System.out.println("\n\n------------------------------------------------------------------------------------------------------------------");
-
+                                ImpressaoMenu.separadorG();
                                 System.out.printf(
                                         "%-3s | %-18s | %-22s | %-10s | %-30s | %-16s%n",
                                         "ID",
@@ -123,8 +107,7 @@ public class Menu {
                                         "DATA ABERTURA"
                                 );
 
-                                System.out.println("------------------------------------------------------------------------------------------------------------------");
-
+                                ImpressaoMenu.separadorG();
                                 for (Ticket t : tickets) {
 
                                     String observacao =
@@ -144,6 +127,8 @@ public class Menu {
                                 }
 
                                 ImpressaoMenu.separadorlnG();
+                            }else if (criarListarTicket.equalsIgnoreCase("0")){
+                                continue;
                             }
                         }while (!criarListarTicket.equalsIgnoreCase("0"));
 
@@ -155,16 +140,13 @@ public class Menu {
 
                         do {
 
-                            System.out.println("------------------------------");
-                            System.out.println("[1] Cadastrar Empresa" +
-                                    "\n[2] Cadastrar novo Usuário" +
-                                    "\n[3] Listar Empresas" +
-                                    "\n[4] Listar Usuários" +
-                                    "\n[5] Listar Tickets" +
-                                    "\n[0] Sair");
-                            System.out.println("------------------------------");
-                            System.out.print("Escolha uma opção: ");
-                            opcaoEscolhidaColaborador = scanner.nextLine();
+                            ImpressaoMenu.menuColaborador();
+
+                            opcaoEscolhidaColaborador =
+                                    LeitorMenu.lerOpcaoValida(
+                                            scanner,
+                                            "0", "1", "2", "3", "4", "5"
+                                    );
 
                             if (opcaoEscolhidaColaborador.equalsIgnoreCase("1")) {
 
@@ -176,20 +158,23 @@ public class Menu {
 
                             }else if (opcaoEscolhidaColaborador.equalsIgnoreCase("2")) {
 
-                                ColetarDadosUsuario novoUsuario = new ColetarDadosUsuario();
                                 UsuariosDAO salvarCliente = new UsuariosDAO();
                                 UsuariosDAO salvarColaborador = new UsuariosDAO();
 
-                                System.out.println("CADASTRO DE USUÁRIO: ");
-                                System.out.println("------------------------------");
-                                System.out.println("[1] Cadastrar Cliente" +
-                                        "\n[2] Cadastrar Colaborador" +
-                                        "\n[0] Cancelar");
-                                System.out.println("------------------------------");
-                                System.out.print("Escolha uma opção: ");
-                                String tipoUsuarioEscolhido = scanner.nextLine();
-                                System.out.println("------------------------------");
+                                ColetarDadosUsuario novoUsuario =
+                                        new ColetarDadosUsuario();
 
+                                ImpressaoMenu.menuCadastroUsuario();
+
+                                String tipoUsuarioEscolhido =
+                                        LeitorMenu.lerOpcaoValida(
+                                                scanner,
+                                                "1",
+                                                "2",
+                                                "0"
+                                        );
+
+                                ImpressaoMenu.separadorlnP();
 
                                 if (tipoUsuarioEscolhido.equalsIgnoreCase("1")) {
                                     Cliente dadosCliente = novoUsuario.coletarDadosCliente();
@@ -197,43 +182,45 @@ public class Menu {
                                     salvarCliente.salvarCliente(dadosCliente);
 
                                 }else if (tipoUsuarioEscolhido.equalsIgnoreCase("2")) {
-                                    System.out.println("-------------- DEPARTAMENTO --------------");
-                                    System.out.println("[1] Departamento de Suporte" +
-                                            "\n[2] Departamento Financeiro" +
-                                            "\n[0] Cancelar");
-                                    System.out.println("------------------------------");
-                                    System.out.print("Escolha uma opção: ");
-                                    String departamentoEscolhido = scanner.nextLine();
 
-                                    Departamento departamento;
+                                    ImpressaoMenu.menuDepartamento();
 
-                                    switch (departamentoEscolhido) {
-                                        case "1":
-                                            departamento = Departamento.SUPORTE;
-                                            break;
-                                        case "2":
-                                            departamento = Departamento.FINANCEIRO;
-                                            break;
-                                        case "0":
-                                            return;
-                                        default:
-                                            System.out.println("Opção inválida!");
-                                            return;
+                                    String departamentoEscolhido =
+                                            LeitorMenu.lerOpcaoValida(
+                                                    scanner,
+                                                    "1",
+                                                    "2",
+                                                    "0"
+                                            );
+
+                                    if (departamentoEscolhido.equals("0")) {
+                                        continue;
                                     }
 
-                                    Colaborador dadosColaborador = novoUsuario.coletarDadosColaborador(departamento);
-                                    salvarColaborador.salvarColaborador(dadosColaborador);
+                                    Departamento departamento =
+                                            Departamento.opcaoEscolhida(
+                                                    departamentoEscolhido
+                                            );
+
+                                    Colaborador dadosColaborador =
+                                            novoUsuario.coletarDadosColaborador(
+                                                    departamento
+                                            );
+
+                                    salvarColaborador.salvarColaborador(
+                                            dadosColaborador
+                                    );
 
                                 }else if (tipoUsuarioEscolhido.equalsIgnoreCase("0")) {
-                                    break;
+                                    continue;
                                 }
                             }else if(opcaoEscolhidaColaborador.equalsIgnoreCase("3")){
                                 EmpresasDAO empresasDAO = new EmpresasDAO();
                                 List<Empresa> empresas = empresasDAO.listarEmpresas();
 
-                                System.out.println("\n\n--------------------------------------------------------------");
+                                ImpressaoMenu.separadorM();
                                 System.out.printf("%-38s | %-18s%n", "EMPRESA", "CNPJ");
-                                System.out.println("--------------------------------------------------------------");
+                                ImpressaoMenu.separadorM();
 
                                 for (Empresa e : empresas) {
                                     System.out.printf(
@@ -249,9 +236,9 @@ public class Menu {
 
                                 List<Usuario> usuarios = usuariosDAO.listarUsuarios();
 
-                                System.out.println("\n\n------------------------------------------------");
+                                ImpressaoMenu.separadorM();
                                 System.out.printf("%-15s | %-30s%n", "TIPO USUÁRIO", "NOME");
-                                System.out.printf("------------------------------------------------%n%n");
+                                ImpressaoMenu.separadorM();
 
                                 for (Usuario u : usuarios) {
 
@@ -262,7 +249,8 @@ public class Menu {
                                     );
                                 }
 
-                                System.out.printf("------------------------------------------------%n%n");
+                                ImpressaoMenu.separadorlnM();
+
                             }else if (opcaoEscolhidaColaborador.equalsIgnoreCase("5")) {
 
                                 TicketsDAO ticketsDAO = new TicketsDAO();
@@ -273,15 +261,14 @@ public class Menu {
                                     System.out.println("\nNenhum registro encontrado.");
 
                                 }else {
-                                    System.out.println("\n\n--------------------------------------------------------------------------------------------");
+                                    ImpressaoMenu.separadorG();
                                     System.out.printf("%-5s | %-20s | %-20s | %-22s | %-10s%n",
                                             "ID",
                                             "CLIENTE",
                                             "COLABORADOR",
                                             "SERVIÇO",
-                                            "STATUS");
-                                    System.out.println("--------------------------------------------------------------------------------------------");
-
+                                            "ESTADO");
+                                    ImpressaoMenu.separadorG();
                                     for (Ticket t : tickets) {
 
                                         System.out.printf("%-5d | %-20s | %-20s | %-22s | %-10s%n",
@@ -292,9 +279,10 @@ public class Menu {
                                                 t.getEstado());
                                     }
 
-                                    System.out.printf("--------------------------------------------------------------------------------------------%n%n");
+                                    ImpressaoMenu.separadorlnG();
                                 }
                             }
+
                         }while (!opcaoEscolhidaColaborador.equalsIgnoreCase("0"));
                     }
                 } else {
@@ -302,9 +290,8 @@ public class Menu {
                 }
             }else if(loginUsuario.equalsIgnoreCase("0")) {
                 System.out.println("Encerrando programa...");
-            }else {
-                System.out.println("Opção inválida!");
             }
+
         }while (!loginUsuario.equalsIgnoreCase("0"));
     }
 }

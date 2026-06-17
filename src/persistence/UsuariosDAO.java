@@ -4,6 +4,7 @@ import enums.Departamento;
 import model.Cliente;
 import model.Colaborador;
 import model.Usuario;
+import utils.ImpressaoMenu;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,7 +49,9 @@ public class UsuariosDAO {
 
                     stmtInsere.executeUpdate();
 
+                    ImpressaoMenu.separadorP();
                     System.out.println("Usuário Admin criado.");
+                    ImpressaoMenu.separadorlnP();
                 }
             }
 
@@ -80,8 +83,9 @@ public class UsuariosDAO {
 
             stmt.executeUpdate();
 
-            System.out.println("\n------------------------------");
+            ImpressaoMenu.separadorP();
             System.out.println("Cliente registrado com sucesso!");
+            ImpressaoMenu.separadorlnP();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -101,7 +105,7 @@ public class UsuariosDAO {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
 
-            stmt.setInt(1, colaborador.getDepartamento().getId());
+            stmt.setInt(1, colaborador.getDepartamento().pegarId());
             stmt.setString(2, colaborador.getNome());
             stmt.setString(3, colaborador.getCpf());
             stmt.setString(4, colaborador.getTelefone());
@@ -111,8 +115,9 @@ public class UsuariosDAO {
 
             stmt.executeUpdate();
 
-            System.out.println("\n------------------------------");
+            ImpressaoMenu.separadorP();
             System.out.println("Colaborador registrado!");
+            ImpressaoMenu.separadorlnP();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -165,7 +170,7 @@ public class UsuariosDAO {
                 int idDepartamento = rs.getInt("departamento_id");
 
                 Departamento departamento =
-                        Departamento.fromId(idDepartamento);
+                        Departamento.buscarPorId(idDepartamento);
 
                 Colaborador colaborador = new Colaborador(
                         rs.getString("colaborador"),
@@ -249,7 +254,7 @@ public class UsuariosDAO {
             if (rs.next()) {
 
                 Departamento departamento =
-                        Departamento.fromId(
+                        Departamento.buscarPorId(
                                 rs.getInt("departamento_id")
                         );
 
@@ -273,5 +278,193 @@ public class UsuariosDAO {
         }
 
         return null;
+    }
+
+    public boolean emailExiste(String email) {
+
+        String sqlClientes =
+                "SELECT 1 FROM clientes WHERE email = ?";
+
+        String sqlColaboradores =
+                "SELECT 1 FROM colaboradores WHERE email = ?";
+
+        try (
+                Connection conn = ConexaoBD.getConexaoBD()
+        ) {
+
+            // Verifica clientes
+            try (PreparedStatement stmt = conn.prepareStatement(sqlClientes)) {
+
+                stmt.setString(1, email);
+
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    return true;
+                }
+            }
+
+            // Verifica colaboradores
+            try (PreparedStatement stmt = conn.prepareStatement(sqlColaboradores)) {
+
+                stmt.setString(1, email);
+
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean cpfExiste(String cpf) {
+
+        String sqlClientes =
+                "SELECT 1 FROM clientes WHERE cpf = ?";
+
+        String sqlColaboradores =
+                "SELECT 1 FROM colaboradores WHERE cpf = ?";
+
+        try (
+                Connection conn = ConexaoBD.getConexaoBD()
+        ) {
+
+            // Procura em clientes
+            try (PreparedStatement stmt = conn.prepareStatement(sqlClientes)) {
+
+                stmt.setString(1, cpf);
+
+                ResultSet rs = stmt.executeQuery();
+
+
+                if (rs.next()) {
+                    return true;
+                }
+            }
+
+            // Procura em colaboradores
+            try (PreparedStatement stmt = conn.prepareStatement(sqlColaboradores)) {
+
+                stmt.setString(1, cpf);
+
+                ResultSet rs = stmt.executeQuery();
+
+
+                if (rs.next()) {
+                    return true;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private Cliente buscarCliente(String email, String senha) {
+
+        String sql =
+                "SELECT * FROM clientes " +
+                        "WHERE email = ? AND senha = ?";
+
+        try (
+                Connection conn = ConexaoBD.getConexaoBD();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, senha);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                Cliente cliente = new Cliente(
+                        rs.getString("cliente"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("cnpj_empresa"),
+                        rs.getString("email"),
+                        rs.getString("senha")
+                );
+
+                cliente.setId(
+                        rs.getInt("id_cliente")
+                );
+
+                return cliente;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private Colaborador buscarColaborador(String email, String senha) {
+
+        String sql =
+                "SELECT * FROM colaboradores " +
+                        "WHERE email = ? AND senha = ?";
+
+        try (
+                Connection conn = ConexaoBD.getConexaoBD();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, senha);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                Departamento departamento =
+                        Departamento.buscarPorId(
+                                rs.getInt("departamento_id")
+                        );
+
+                Colaborador colaborador =
+                        new Colaborador(
+                                rs.getString("colaborador"),
+                                rs.getString("cpf"),
+                                rs.getString("telefone"),
+                                rs.getString("endereco"),
+                                rs.getString("email"),
+                                rs.getString("senha"),
+                                departamento
+                        );
+
+                colaborador.setId(
+                        rs.getInt("id_colaborador")
+                );
+
+                return colaborador;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Usuario autenticar(String email, String senha) {
+
+        Usuario usuario = buscarCliente(email, senha);
+
+        if (usuario != null) {
+            return usuario;
+        }
+
+        return buscarColaborador(email, senha);
     }
 }

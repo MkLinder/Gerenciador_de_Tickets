@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import enums.EstadoTicket;
 import enums.TipoServico;
 
-
 public class Ticket {
     private int id;
     private Usuario cliente;
@@ -27,14 +26,6 @@ public class Ticket {
         this.dataAbertura = dataAbertura;
         this.descricao = descricao;
     }
-
-    public Ticket(LocalDateTime dataFechamento, EstadoTicket estado, String descricao, String observacao){
-        this.dataFechamento = dataFechamento;
-        this.estado = estado;
-        this.descricao = descricao;
-        this.observacao = observacao;
-    }
-
 
     public int getId() {
         return id;
@@ -98,10 +89,6 @@ public class Ticket {
 
     public String getObservacao() {
         return observacao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
     }
 
     public void setObservacao(String observacao) {
